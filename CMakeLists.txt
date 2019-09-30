@@ -1,8 +1,15 @@
-cmake_minimum_required(VERSION 2.7)
+cmake_minimum_required(VERSION 3.12)
 set(CMAKE_CXX_VERSION 14)
 project(vmplugins)
 
-file(GLOB_RECURSE COMMON_SOURCES "visualman/*.cc")
-include_directories("${CMAKE_SOURCE_DIR}/visualman")
+
+include(scripts/external.cmake)
+include_directories("${CMAKE_SOURCE_DIR}/extension")
+
+vm_external_module(
+  GIT_REPOSITORY https://github.com/cad420/VMUtils
+  GIT_TAG        master
+)
+
 
 add_subdirectory(src)

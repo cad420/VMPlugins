@@ -8,8 +8,11 @@ if(lz4_FOUND)
 aux_source_directory(. SRC)
 
 add_library(lz4filereader SHARED)
+
+vm_target_dependency(lz4filereader VMUtils PRIVATE)
+
 target_sources(lz4filereader PRIVATE ${SRC})
-target_link_libraries(lz4filereader lz4::lz4)
+target_link_libraries(lz4filereader lz4::lz4 VMUtils)
 target_include_directories(lz4filereader PRIVATE "interface" ${LZ4_INCLUDE_DIRS})
 else()
 
