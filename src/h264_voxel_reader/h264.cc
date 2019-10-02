@@ -1,13 +1,13 @@
-#include <pagefileinterface.h>
+#include <VMCoreExtension/i3dblockfileplugininterface.h>
 #include <memory>
 #include <vector>
 #include <string>
+#include <VMat/geometry.h>
+#include <VMCoreExtension/plugin.h>
+#include <VMCoreExtension/plugindef.h>
 
-namespace ysl
-{
 struct H264VoxelReader : I3DBlockFilePluginInterface
 {
-	DECLARE_RTTI
 
 public:
 	void Open( const std::string &filename ) override;
@@ -17,20 +17,18 @@ public:
 	std::size_t GetVirtualPageCount() const override;
 
 	int GetPadding() const override;
-	Size3 GetDataSizeWithoutPadding() const override;
-	Size3 Get3DPageSize() const override;
+	ysl::Size3 GetDataSizeWithoutPadding() const override;
+	ysl::Size3 Get3DPageSize() const override;
 	int Get3DPageSizeInLog() const override;
-	Size3 Get3DPageCount() const override;
+	ysl::Size3 Get3DPageCount() const override;
 };
 
-struct H264VoxelReaderFactory : IPluginFactory
+struct H264VoxelReaderFactory : ysl::IPluginFactory
 {
-	DECLARE_PLUGIN_FACTORY( "visualman.blockdata.io" )
 public:
 	std::vector<std::string> Keys() const override;
-	std::unique_ptr<Object> Create(const std::string &key) override;
+	::vm::IEverything * Create(const std::string &key) override;
 };
 
-}  // namespace ysl
 
-EXPORT_PLUGIN_FACTORY( ysl::H264VoxelReaderFactory )
+EXPORT_PLUGIN_FACTORY(H264VoxelReaderFactory)

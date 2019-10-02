@@ -7,7 +7,6 @@
 #include <VMCoreExtension/plugindef.h>
 
 #include <VMUtils/ref.hpp>
-#include <VMUtils/vmnew.hpp>
 #include <VMat/geometry.h>
 #include <fstream>
 #include <vector>
