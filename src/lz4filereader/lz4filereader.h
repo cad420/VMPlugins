@@ -20,7 +20,7 @@ namespace lz4filereader
 	class LZ4FileReader :public ::vm::EverythingBase<I3DBlockFilePluginInterface>
 	{
 	public:
-		LZ4FileReader(::vm::IRefCnt * cnt): ::vm::EverythingBase<ysl::I3DBlockFilePluginInterface>(cnt){}
+		LZ4FileReader(::vm::IRefCnt * cnt): ::vm::EverythingBase<I3DBlockFilePluginInterface>(cnt){}
 		void Open(const std::string& fileName) override;
 		int GetPadding() const override;
 		Size3 GetDataSizeWithoutPadding() const override;

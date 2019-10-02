@@ -1,11 +1,8 @@
 
 #include "lz4filereader.h"
-
+#include <VMFoundation/pluginloader.h>
+#include <VMUtils/vmnew.hpp>
 #include <lz4.h>
-
-//#include <VMFoundation/pluginloader.h>
-
-
 
 void lz4filereader::LZ4FileReader::Open(const std::string& fileName)
 {
