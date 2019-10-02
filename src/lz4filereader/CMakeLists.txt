@@ -4,8 +4,9 @@ project(lz4filereader)
 
 find_package(lz4 CONFIG REQUIRED)
 if(lz4_FOUND)
-
+message(STATUS "LZ4 Found")
 aux_source_directory(. SRC)
+
 add_library(lz4filereader SHARED)
 vm_target_dependency(lz4filereader vmcore PRIVATE)
 
