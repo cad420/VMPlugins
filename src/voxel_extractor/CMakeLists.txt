@@ -9,6 +9,10 @@ vm_external_module(
 	GIT_TAG        master
 )
 vm_external_module(
+	GIT_REPOSITORY https://github.com/cad420/cuda-fx
+	GIT_TAG        master
+)
+vm_external_module(
 	GIT_REPOSITORY https://github.com/cad420/VMCore
 	GIT_TAG        master
 )
@@ -17,13 +21,13 @@ file(GLOB_RECURSE VOXEL_EXTRACTOR_SRC
 	**/*.cc
 	*.cc
 )
-
-add_library(voxel_extractor SHARED
+cuda_add_library(voxel_extractor SHARED
 	${VOXEL_EXTRACTOR_SRC}
 )
 vm_target_dependency(voxel_extractor voxel_extract PRIVATE)
 vm_target_dependency(voxel_extractor vmcore PUBLIC)
 vm_target_dependency(voxel_extractor VMUtils PUBLIC)
+vm_target_dependency(voxel_extractor cudafx PRIVATE)
 target_link_libraries(voxel_extractor vmcore)
 
 # option(BUILD_VOXEL_EXTRACTOR "set on to build voxel extractor" ON)

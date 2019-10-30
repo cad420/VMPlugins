@@ -3,6 +3,7 @@
 #include <VMFoundation/pluginloader.h>
 #include <vocomp/refine/extractor.hpp>
 #include <VMCoreExtension/ifilemappingplugininterface.h>
+#include <vocomp/refine/pipe_factory.hpp>
 
 using namespace ysl;
 using namespace vol;
@@ -43,7 +44,10 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 		vm::println( "{}", make_pair( (void *)in, file_bytes ) );
 		reader.reset( new SliceReader( in, file_bytes ) );
 		_.reset( new vol::refine::Extractor( *reader ) );
-		pipe.reset( new Copy );
+
+		
+		
+		pipe.reset( PipeFactory::create(fileName) );
 
 		buf.resize( GetPageSize() );
 		w.reset( new SliceWriter( buf.data(), buf.size() ) );
