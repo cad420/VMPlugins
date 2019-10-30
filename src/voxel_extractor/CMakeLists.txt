@@ -17,6 +17,7 @@ vm_external_module(
 	GIT_TAG        master
 )
 
+find_package(CUDA REQUIRED)
 file(GLOB_RECURSE VOXEL_EXTRACTOR_SRC 
 	**/*.cc
 	*.cc
