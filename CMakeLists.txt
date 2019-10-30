@@ -9,6 +9,10 @@ include(scripts/external.cmake)
 
 #add_subdirectory(VMCore)
 
+if (UNIX AND NOT APPLE)
+	add_compile_options(-fPIC)
+endif()
+
 vm_external_module(
 	GIT_REPOSITORY https://github.com/cad420/VMUtils
 	GIT_TAG        master

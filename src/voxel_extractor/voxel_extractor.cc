@@ -19,7 +19,7 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 #ifdef _WIN32
 		file_mapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>( "windows" );
 #else
-		fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>( "linux" );
+		file_mapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>( "linux" );
 #endif
 
 		if ( file_mapping == nullptr ) {
@@ -40,7 +40,7 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 		}
 
 		auto in = (char *)file_mapping->FileMemPointer( 0, file_bytes );
-		vm::println( "{}", make_pair( (void*)in, file_bytes ) );
+		vm::println( "{}", make_pair( (void *)in, file_bytes ) );
 		reader.reset( new SliceReader( in, file_bytes ) );
 		_.reset( new vol::refine::Extractor( *reader ) );
 		pipe.reset( new Copy );
@@ -84,9 +84,9 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 	{
 		auto xyz = Dim( pageID, Size2( _->dim().x, _->dim().y ) );
 		auto r = _->extract( index::Idx{}
-							   .set_x( xyz.x)
-							   .set_y( xyz.y)
-							   .set_z( xyz.z) );
+							   .set_x( xyz.x )
+							   .set_y( xyz.y )
+							   .set_z( xyz.z ) );
 		w->seek( 0 );
 		pipe->transfer( r, *w );
 		return buf.data();
