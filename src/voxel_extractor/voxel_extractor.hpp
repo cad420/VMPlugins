@@ -19,9 +19,9 @@ struct VoxelExtractor : ::vm::EverythingBase<I3DBlockFilePluginInterface>
 public:
 	void Open( const std::string &fileName ) override;
 	int GetPadding() const override;
-	ysl::Size3 GetDataSizeWithoutPadding() const override;
-	ysl::Size3 Get3DPageSize() const override;
-	ysl::Size3 Get3DPageCount() const override;
+	vm::Size3 GetDataSizeWithoutPadding() const override;
+	vm::Size3 Get3DPageSize() const override;
+	vm::Size3 Get3DPageCount() const override;
 	int Get3DPageSizeInLog() const override;
 	const void *GetPage( size_t pageID ) override;
 	size_t GetPageSize() const override;
@@ -32,7 +32,7 @@ private:
 	vm::Box<detail::VoxelExtractorImpl> _;
 };
 
-struct VoxelExtractorFactory : ysl::IPluginFactory
+struct VoxelExtractorFactory : vm::IPluginFactory
 {
 	DECLARE_PLUGIN_FACTORY( "visualman.blockdata.io" )
 

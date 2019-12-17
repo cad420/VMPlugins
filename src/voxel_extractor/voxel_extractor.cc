@@ -5,9 +5,9 @@
 #include <VMCoreExtension/ifilemappingplugininterface.h>
 #include <vocomp/refine/pipe_factory.hpp>
 
-using namespace ysl;
 using namespace vol;
 using namespace std;
+using namespace vm;
 
 namespace voxel_extract
 {
@@ -18,7 +18,7 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 	void Open( const std::string &fileName )
 	{
 #ifdef _WIN32
-		file_mapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>( "windows" );
+		file_mapping = vm::PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>( "windows" );
 #else
 		file_mapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>( "linux" );
 #endif
@@ -45,36 +45,35 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 		reader.reset( new SliceReader( in, file_bytes ) );
 		_.reset( new vol::refine::Extractor( *reader ) );
 
-		
-		
-		pipe.reset( PipeFactory::create(fileName) );
+		pipe.reset( PipeFactory::create( fileName ) );
+		video_decompressor = dynamic_cast<vol::video::Decompressor *>( pipe.get() );
 
-		buf.resize( GetPageSize() );
-		w.reset( new SliceWriter( buf.data(), buf.size() ) );
+		buf.resize( GetPageSize() *2);
+		w.reset( new SliceWriter( buf.data(), GetPageSize() ) );
 	}
 	int GetPadding()
 	{
 		return _->padding();
 	}
-	Size3 GetDataSizeWithoutPadding()
+	vm::Size3 GetDataSizeWithoutPadding()
 	{
-		return Size3{
+		return vm::Size3{
 			_->raw().x,
 			_->raw().y,
 			_->raw().z,
 		};
 	}
-	Size3 Get3DPageSize()
+	vm::Size3 Get3DPageSize()
 	{
-		return Size3{
+		return vm::Size3{
 			_->block_size(),
 			_->block_size(),
 			_->block_size(),
 		};
 	}
-	Size3 Get3DPageCount()
+	vm::Size3 Get3DPageCount()
 	{
-		return Size3{
+		return vm::Size3{
 			_->dim().x,
 			_->dim().y,
 			_->dim().z,
@@ -86,13 +85,18 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 	}
 	const void *GetPage( size_t pageID )
 	{
-		auto xyz = Dim( pageID, Size2( _->dim().x, _->dim().y ) );
+		auto xyz = vm::Dim( pageID, vm::Size2( _->dim().x, _->dim().y ) );
 		auto r = _->extract( index::Idx{}
 							   .set_x( xyz.x )
 							   .set_y( xyz.y )
 							   .set_z( xyz.z ) );
 		w->seek( 0 );
-		pipe->transfer( r, *w );
+		if ( video_decompressor ) {
+			cufx::MemoryView1D<unsigned char> view( buf.data(), buf.size());
+			video_decompressor->decompress( r, view );
+		} else {
+			pipe->transfer( r, *w );
+		}
 		return buf.data();
 	}
 	size_t GetPageSize()
@@ -112,6 +116,7 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 	unique_ptr<SliceReader> reader;
 	unique_ptr<refine::Extractor> _;
 	unique_ptr<Pipe> pipe;
+	video::Decompressor *video_decompressor = nullptr;
 	vector<char> buf;
 	unique_ptr<SliceWriter> w;
 };
@@ -136,15 +141,15 @@ int VoxelExtractor::GetPadding() const
 {
 	return _->GetPadding();
 }
-ysl::Size3 VoxelExtractor::GetDataSizeWithoutPadding() const
+vm::Size3 VoxelExtractor::GetDataSizeWithoutPadding() const
 {
 	return _->GetDataSizeWithoutPadding();
 }
-ysl::Size3 VoxelExtractor::Get3DPageSize() const
+vm::Size3 VoxelExtractor::Get3DPageSize() const
 {
 	return _->Get3DPageSize();
 }
-ysl::Size3 VoxelExtractor::Get3DPageCount() const
+vm::Size3 VoxelExtractor::Get3DPageCount() const
 {
 	return _->Get3DPageCount();
 }

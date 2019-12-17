@@ -10,5 +10,5 @@ endif()
 
 #option(BUILD_LZ4_VOXEL_READER "set on to build lz4filereader" OFF)
 #if(BUILD_LZ4_VOXEL_READER)
-#add_subdirectory(lz4filereader)
+add_subdirectory(lz4filereader)
 #endif()

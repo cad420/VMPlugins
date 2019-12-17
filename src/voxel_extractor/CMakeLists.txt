@@ -1,6 +1,6 @@
 
 set(VOCOMP_BUILD_VIDEO_COMPRESS OFF)
-set(VOCOMP_BUILD_VIDEO_DECOMPRESS OFF)
+set(VOCOMP_BUILD_VIDEO_DECOMPRESS ON)
 set(VOCOMP_BUILD_REFINER OFF)
 set(VOCOMP_BUILD_EXTRACTOR ON)
 
@@ -26,6 +26,7 @@ cuda_add_library(voxel_extractor SHARED
 	${VOXEL_EXTRACTOR_SRC}
 )
 vm_target_dependency(voxel_extractor voxel_extract PRIVATE)
+vm_target_dependency(voxel_extractor video_decompress PRIVATE)
 vm_target_dependency(voxel_extractor vmcore PUBLIC)
 vm_target_dependency(voxel_extractor VMUtils PUBLIC)
 vm_target_dependency(voxel_extractor cudafx PRIVATE)
