@@ -4,12 +4,12 @@
 #include <VMUtils/vmnew.hpp>
 #include <lz4.h>
 
-void lz4filereader::LZ4FileReader::Open(const std::string& fileName)
+void LZ4FileReader::Open(const std::string& fileName)
 {
 #ifdef _WIN32
-	fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>("windows");
+	fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IMappingFile>("windows");
 #else
-	fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>("linux");
+	fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IMappingFile>("linux");
 #endif
 
 	if(fileMapping == nullptr)
@@ -80,62 +80,63 @@ void lz4filereader::LZ4FileReader::Open(const std::string& fileName)
 	const auto originalHeight = header.originalDataDim[1];
 	const auto originalDepth = header.originalDataDim[2];
 	
-	vSize = ysl::Size3((vx), (vy), (vz));
-	bSize = ysl::Size3(bx, by, bz);
-	oSize = ysl::Size3(originalWidth, originalHeight, originalDepth);
+	vSize = vm::Size3((vx), (vy), (vz));
+	bSize = vm::Size3(bx, by, bz);
+	oSize = vm::Size3(originalWidth, originalHeight, originalDepth);
 
 	blockSize = Size3(blockLength,blockLength,blockLength);
 	blockSizeBytes = blockSize.Prod();
 
 }
 
-int lz4filereader::LZ4FileReader::GetPadding() const
+int LZ4FileReader::GetPadding() const
 {
 	return header.padding;
 }
 
-ysl::Size3 lz4filereader::LZ4FileReader::GetDataSizeWithoutPadding() const
+vm::Size3 LZ4FileReader::GetDataSizeWithoutPadding() const
 {
 	return oSize;
 }
 
-ysl::Size3 lz4filereader::LZ4FileReader::Get3DPageSize() const
+vm::Size3 LZ4FileReader::Get3DPageSize() const
 {
 	return blockSize;
 }
 
-ysl::Size3 lz4filereader::LZ4FileReader::Get3DPageCount() const
+vm::Size3 LZ4FileReader::Get3DPageCount() const
 {
 	return bSize;
 }
 
-int lz4filereader::LZ4FileReader::Get3DPageSizeInLog() const
+int LZ4FileReader::Get3DPageSizeInLog() const
 {
 	return header.blockLengthInLog;
 }
 
-const void* lz4filereader::LZ4FileReader::GetPage(size_t pageID)
+const void* LZ4FileReader::GetPage(size_t pageID)
 {
 	LZ4_decompress_safe(dataPtr+(*blockOffset)[pageID], blockBuf, (*blockBytes)[pageID], blockSizeBytes);
 	return blockBuf;
 }
 
-size_t lz4filereader::LZ4FileReader::GetPageSize() const
+size_t LZ4FileReader::GetPageSize() const
 {
 	return 1 << header.blockLengthInLog; // ?????
 }
 
-size_t lz4filereader::LZ4FileReader::GetPhysicalPageCount() const
+
+size_t LZ4FileReader::GetPhysicalPageCount()const
 {
 	return bSize.Prod();
 }
 
-size_t lz4filereader::LZ4FileReader::GetVirtualPageCount() const
+size_t LZ4FileReader::GetVirtualPageCount()const
 {
 	return bSize.Prod();
 }
 
-lz4filereader::LZ4FileReader::~LZ4FileReader()
+LZ4FileReader::~LZ4FileReader()
 {
 	delete blockBytes;
 	delete blockOffset;
@@ -144,14 +145,17 @@ lz4filereader::LZ4FileReader::~LZ4FileReader()
 }
 
 
-::vm::IEverything* lz4filereader::LZ4FileReaderFactory::Create(const std::string& key)
+::vm::IEverything* LZ4FileReaderFactory::Create(const std::string& key)
 {
 	return VM_NEW<LZ4FileReader>();
 }
 
-std::vector<std::string> lz4filereader::LZ4FileReaderFactory::Keys() const
+std::vector<std::string> LZ4FileReaderFactory::Keys() const
 {
 	return { ".lz4" };
 }
 
-EXPORT_PLUGIN_FACTORY_IMPLEMENT(lz4filereader::LZ4FileReaderFactory)
+
+VM_REGISTER_PLUGIN_FACTORY_IMPL( LZ4FileReaderFactory )
+
+EXPORT_PLUGIN_FACTORY_IMPLEMENT(LZ4FileReaderFactory)
