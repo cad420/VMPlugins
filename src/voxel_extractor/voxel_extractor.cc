@@ -4,6 +4,7 @@
 #include <vocomp/refine/extractor.hpp>
 #include <VMCoreExtension/ifilemappingplugininterface.h>
 #include <vocomp/refine/pipe_factory.hpp>
+#include <VMUtils/ref.hpp>
 
 using namespace vol;
 using namespace std;
@@ -18,9 +19,9 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 	void Open( const std::string &fileName )
 	{
 #ifdef _WIN32
-		file_mapping = vm::PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>( "windows" );
+		file_mapping = vm::PluginLoader::GetPluginLoader()->CreatePlugin<IMappingFile>( "windows" );
 #else
-		file_mapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>( "linux" );
+		file_mapping = PluginLoader::GetPluginLoader()->CreatePlugin<IMappingFile>( "linux" );
 #endif
 
 		if ( file_mapping == nullptr ) {
@@ -48,7 +49,7 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 		pipe.reset( PipeFactory::create( fileName ) );
 		video_decompressor = dynamic_cast<vol::video::Decompressor *>( pipe.get() );
 
-		buf.resize( GetPageSize() *2);
+		buf.resize( GetPageSize() * 2 );
 		w.reset( new SliceWriter( buf.data(), GetPageSize() ) );
 	}
 	int GetPadding()
@@ -92,7 +93,7 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 							   .set_z( xyz.z ) );
 		w->seek( 0 );
 		if ( video_decompressor ) {
-			cufx::MemoryView1D<unsigned char> view( buf.data(), buf.size());
+			cufx::MemoryView1D<unsigned char> view( buf.data(), buf.size() );
 			video_decompressor->decompress( r, view );
 		} else {
 			pipe->transfer( r, *w );
@@ -112,7 +113,7 @@ struct VoxelExtractorImpl : vm::NoCopy, vm::NoMove
 		return _->dim().x * _->dim().y * _->dim().z;
 	}
 
-	::vm::Ref<IFileMapping> file_mapping;
+	::vm::Ref<IMappingFile> file_mapping;
 	unique_ptr<SliceReader> reader;
 	unique_ptr<refine::Extractor> _;
 	unique_ptr<Pipe> pipe;
@@ -176,11 +177,6 @@ size_t VoxelExtractor::GetVirtualPageCount() const
 
 }  // namespace voxel_extract
 
-// #include <VMCoreExtension/ifilemappingplugininterface.h>
+VM_REGISTER_PLUGIN_FACTORY_IMPL( VoxelExtractorFactory )
 
-// int main(int argc, char **argv)
-// {
-
-// }
-
-EXPORT_PLUGIN_FACTORY_IMPLEMENT( voxel_extract::VoxelExtractorFactory )
+EXPORT_PLUGIN_FACTORY_IMPLEMENT( VoxelExtractorFactory )

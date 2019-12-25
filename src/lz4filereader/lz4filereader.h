@@ -34,7 +34,7 @@ public:
 private:
 	//std::ifstream inFile;
 	//std::shared_ptr<IFileMapping> fileMapping;
-	vm::Ref<IFileMapping> fileMapping;
+	vm::Ref<IMappingFile> fileMapping;
 
 	char *dataPtr = nullptr;
 	LVDHeader header;
@@ -54,6 +54,8 @@ public:
 	::vm::IEverything *Create( const std::string &key ) override;
 	std::vector<std::string> Keys() const override;
 };
+
+VM_REGISTER_PLUGIN_FACTORY_DECL( LZ4FileReaderFactory )
 
 EXPORT_PLUGIN_FACTORY( LZ4FileReaderFactory )
 #endif

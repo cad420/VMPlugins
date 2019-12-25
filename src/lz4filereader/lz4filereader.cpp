@@ -7,9 +7,9 @@
 void LZ4FileReader::Open(const std::string& fileName)
 {
 #ifdef _WIN32
-	fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>("windows");
+	fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IMappingFile>("windows");
 #else
-	fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IFileMapping>("linux");
+	fileMapping = PluginLoader::GetPluginLoader()->CreatePlugin<IMappingFile>("linux");
 #endif
 
 	if(fileMapping == nullptr)
@@ -154,5 +154,8 @@ std::vector<std::string> LZ4FileReaderFactory::Keys() const
 {
 	return { ".lz4" };
 }
+
+
+VM_REGISTER_PLUGIN_FACTORY_IMPL( LZ4FileReaderFactory )
 
 EXPORT_PLUGIN_FACTORY_IMPLEMENT(LZ4FileReaderFactory)

@@ -32,21 +32,25 @@ private:
 	vm::Box<detail::VoxelExtractorImpl> _;
 };
 
+
+}  // namespace voxel_extract
+
+
 struct VoxelExtractorFactory : vm::IPluginFactory
 {
 	DECLARE_PLUGIN_FACTORY( "visualman.blockdata.io" )
 
 	::vm::IEverything *Create( const std::string &key ) override
 	{
-		return VM_NEW<VoxelExtractor>();
+		return VM_NEW<voxel_extract::VoxelExtractor>();
 	}
 
 	std::vector<std::string> Keys() const override
 	{
-		return {".comp"};
+		return { ".comp" };
 	}
 };
 
-}  // namespace voxel_extract
+VM_REGISTER_PLUGIN_FACTORY_DECL( VoxelExtractorFactory )
 
-EXPORT_PLUGIN_FACTORY( voxel_extract::VoxelExtractorFactory )
+EXPORT_PLUGIN_FACTORY( VoxelExtractorFactory )
